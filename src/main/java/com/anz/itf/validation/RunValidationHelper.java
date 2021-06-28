@@ -209,6 +209,7 @@ public final class RunValidationHelper {
         newDfWithDirtyFlag.write()
                 .mode(SaveMode.Overwrite)
                 .option("header", "true")
+                .option("dateFormat", "dd-MM-yyyy")
                 .csv(inputArgsMap.get("actualOutput"));
 
 

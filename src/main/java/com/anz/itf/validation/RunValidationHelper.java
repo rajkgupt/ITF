@@ -173,6 +173,8 @@ public final class RunValidationHelper {
                 fs.globStatus(new org.apache.hadoop.fs.Path(
                         inputArgsMap.get("actualOutput")+"/part-0000*"))[0].getPath().getName();
 
+        fs.delete(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + "/" + "_SUCCESS"));
+
         fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + "/" + file),
                 new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")));
 

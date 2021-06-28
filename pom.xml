@@ -108,7 +108,7 @@
                 <version>3.1.1</version>
 
                 <configuration>
-                    <finalName>anz-code-challenge-UBER.jar</finalName>
+                    <finalName>anz-code-challenge-UBER</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>

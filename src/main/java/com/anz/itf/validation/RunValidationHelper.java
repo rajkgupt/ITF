@@ -172,11 +172,18 @@ public final class RunValidationHelper {
         String file =
                 fs.globStatus(new org.apache.hadoop.fs.Path(
                         inputArgsMap.get("actualOutput")+"/part-0000*"))[0].getPath().getName();
+        System.out.println("Part file written for actual output file is:" + file);
 
         fs.delete(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + "/" + "_SUCCESS"));
 
+
+        Path path = Paths.get(inputArgsMap.get("actualOutput") );
+        // call getFileName() and get FileName path object
+        Path fileNameWithoutFolder = path.getFileName();
+        Path parentPath = path.getParent();
+
         fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + "/" + file),
-                new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")));
+                new org.apache.hadoop.fs.Path(parentPath + "/" + fileNameWithoutFolder));
 
         //df.write().mode(SaveMode.Overwrite).csv("newcars.csv");
 

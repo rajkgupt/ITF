@@ -1,0 +1,41 @@
+{
+    "columns": [
+        {
+            "name": "State/Territory",
+            "type": "STRING",
+            "mandatory": true
+        },
+        {
+            "name": "Capital",
+            "type": "STRING",
+            "mandatory": true
+        },
+        {
+            "name": "State/Territory",
+            "type": "STRING",
+            "mandatory": true
+        },
+        {
+            "name": "City Population",
+            "type": "INTEGER",
+            "mandatory": true
+        },
+        {
+            "name": "State/Territory Population",
+            "type": "INTEGER",
+            "mandatory": true
+        },
+        {
+            "name": "Percentage",
+            "type": "INTEGER",
+            "mandatory": true
+        },
+        {
+            "name": "Established",
+            "type": "DATE",
+            "format": "dd-MM-yyyy",
+            "mandatory": true
+        }
+    ],
+    "primary_keys": ["State/Territory"]
+}

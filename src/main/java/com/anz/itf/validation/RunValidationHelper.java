@@ -3,6 +3,7 @@ package com.anz.itf.validation;
 import com.anz.itf.utils.FileOperations;
 import com.anz.itf.utils.ParseOptions;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 import org.apache.spark.sql.*;
 
 import java.io.File;
@@ -177,6 +178,14 @@ public final class RunValidationHelper {
             return 4;
     }
 
+
+    /**
+     *
+     * @param spark
+     * @param inputFileDF
+     * @param inputArgsMap
+     * @return
+     */
     public Dataset<Row> getDataFrameWithDirtyFlag(SparkSession spark, Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
 
         Dataset<Row>newDf = inputFileDF.withColumn("dirty_flag", functions.when(functions.col("_corrupt_record").isNotNull(), 1)
@@ -188,6 +197,14 @@ public final class RunValidationHelper {
     }
 
 
+    /**
+     *
+     * @param spark
+     * @param newDfWithDirtyFlag
+     * @param inputArgsMap
+     * @return
+     * @throws Exception
+     */
     public String writeDataFrame(SparkSession spark, Dataset<Row> newDfWithDirtyFlag, HashMap<String, String> inputArgsMap) throws Exception{
         newDfWithDirtyFlag.write()
                 .mode(SaveMode.Overwrite)
@@ -229,6 +246,7 @@ public final class RunValidationHelper {
             }
         }
 
+
         File file = new File (output + "Tmp" + "/_SUCCESS");;
         if (file.delete()) {
             System.out.println(file.getName() + " is deleted!");
@@ -236,9 +254,10 @@ public final class RunValidationHelper {
             System.out.println("Sorry, unable to delete the file.");
         }
 
-        Path path1 = Paths.get(output + "Tmp");
-        java.nio.file.Files.delete(path1);
+        //Path path1 = Paths.get(output + "Tmp");
+        //java.nio.file.Files.delete(path1);
 
+        FileUtils.deleteDirectory(new File(output + "Tmp"));
 
 
 

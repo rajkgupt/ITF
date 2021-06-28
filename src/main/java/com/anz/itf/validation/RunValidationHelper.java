@@ -182,8 +182,14 @@ public final class RunValidationHelper {
         Path fileNameWithoutFolder = path.getFileName();
         Path parentPath = path.getParent();
 
-        fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + "/" + file),
+        System.out.println("ParentPath value is" + parentPath);
+        System.out.println("fileNameWithoutFolder value is" + fileNameWithoutFolder);
+
+
+        boolean returnValue = fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + "/" + file),
                 new org.apache.hadoop.fs.Path(parentPath + "/" + fileNameWithoutFolder));
+
+        System.out.println("Return value of rename function is" + returnValue);
 
         //df.write().mode(SaveMode.Overwrite).csv("newcars.csv");
 

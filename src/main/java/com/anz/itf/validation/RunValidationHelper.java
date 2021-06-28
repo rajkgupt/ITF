@@ -89,8 +89,6 @@ public final class RunValidationHelper {
         // call getFileName() and get FileName path object
         Path fileNameWithoutFolderFromInputCommand = path.getFileName();
 
-        //String[] fileFolderNamesArray = fileNameWithFolderFromInputCommand.split("/");
-        //fileNameWithoutFolderFromInputCommand = fileFolderNamesArray[1];
         dataFileNameFromTagFile = tagFileContents.get("fileName");
         System.out.println("fileNameWithoutFolderFromInputCommand calculated is:" + fileNameWithoutFolderFromInputCommand);
         System.out.println("dataFileNameFromTagFile found is:" + dataFileNameFromTagFile);
@@ -159,9 +157,8 @@ public final class RunValidationHelper {
     public String writeDataFrame(SparkSession spark, Dataset<Row> newDfWithDirtyFlag, HashMap<String, String> inputArgsMap) {
         newDfWithDirtyFlag.write()
                 .mode(SaveMode.Overwrite)
-                .format("csv")
                 .option("header", "true")
-                .save(inputArgsMap.get("ExpectedOutput"));
+                .csv(inputArgsMap.get("ExpectedOutput"));
         //df.write().mode(SaveMode.Overwrite).csv("newcars.csv");
 
         return "Success";

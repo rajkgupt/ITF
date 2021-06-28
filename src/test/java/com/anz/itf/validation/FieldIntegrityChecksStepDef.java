@@ -68,7 +68,7 @@ public class FieldIntegrityChecksStepDef {
 
 
         Dataset<Row>newDfWithDirtyFlag = helper.getDataFrameWithDirtyFlag(spark, inputFileDF, inputArgsMap);
-        //String returnMessage = helper.writeDataFrame(spark, newDfWithDirtyFlag, inputArgsMap);
+        String returnMessage = helper.writeDataFrame(spark, newDfWithDirtyFlag, inputArgsMap);
 
         FileOperations fileOperations = new FileOperations();
         boolean compareResult = fileOperations.compareTwoFiles(inputArgsMap.get("output"),inputArgsMap.get("ExpectedOutput") );

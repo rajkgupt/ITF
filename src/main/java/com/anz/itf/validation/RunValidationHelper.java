@@ -195,8 +195,17 @@ public final class RunValidationHelper {
                 .csv(inputArgsMap.get("actualOutput"));
 
 
-
         String output = inputArgsMap.get("actualOutput");
+        File sourceDir = new File(output);
+        File destDir = new File(output+"Tmp");
+
+        if (sourceDir.renameTo(destDir)) {
+            System.out.println("Dir renamed successfully");
+        } else {
+            System.out.println("failed to rename dir");
+        }
+
+        //String output = inputArgsMap.get("actualOutput");
         Path path = Paths.get(output);
         // call getFileName() and get FileName path object
         Path fileNameWithoutFolderFromInputCommand = path.getFileName();

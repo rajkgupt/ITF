@@ -72,20 +72,5 @@ public class ParseOptions {
                 System.out.println(entry.getKey() + " " + entry.getValue());
             });
         }
-
-
-        String output = "C:\\raj\\Spark\\solution\\scenarios\\act-sbe2-2.csv";
-        File sourceDir = new File(output);
-        File destDir = new File(output+"Tmp");
-
-        if (sourceDir.renameTo(destDir)) {
-            System.out.println("Dir renamed successfully");
-        } else {
-            System.out.println("failed to rename dir");
-        }
-
-
-
-
     }
 }

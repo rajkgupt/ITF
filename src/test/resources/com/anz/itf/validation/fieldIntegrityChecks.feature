@@ -18,4 +18,4 @@ Feature: Field (Data) Integrity checks
     And I have a SCHEMA file named1 "scenarios/aus-capitals.json"
     When I execute the application with output1 "output/act-sbe2-2.csv"
     Then the program should exit with RETURN CODE of 0
-    And "output/act-sbe2-2" should match "scenarios/exp-sbe2-2.csv"
+    And "output/act-sbe2-2.csv" should match "scenarios/exp-sbe2-2.csv"

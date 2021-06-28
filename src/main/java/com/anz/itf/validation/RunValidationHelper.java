@@ -163,8 +163,19 @@ public final class RunValidationHelper {
 
 
         FileSystem fs = FileSystem.get(spark.sparkContext().hadoopConfiguration());
+
+        /*
         fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")+"/part-0000*"),
                 new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")));
+        */
+
+        String file =
+                fs.globStatus(new org.apache.hadoop.fs.Path(
+                        inputArgsMap.get("actualOutput")+"/part-0000*"))[0].getPath().getName();
+
+        fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + file),
+                new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")));
+
         //df.write().mode(SaveMode.Overwrite).csv("newcars.csv");
 
         return "Success";

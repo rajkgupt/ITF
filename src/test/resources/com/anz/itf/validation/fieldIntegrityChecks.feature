@@ -11,7 +11,7 @@ Feature: Field (Data) Integrity checks
     Then the program should exit with RETURN CODE of 0
     And "output/act-sbe2-1.csv" should match "scenarios/exp-sbe2-1.csv"
 
-  #@ignore
+  @ignore
   Scenario: Invalid fields
     Given I have a DATA named "scenarios/aus-capitals-invalid-3.csv"
     And I have a TAG file named1 "scenarios/aus-capitals.tag"

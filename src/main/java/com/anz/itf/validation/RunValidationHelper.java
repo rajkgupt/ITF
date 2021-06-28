@@ -11,6 +11,7 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.apache.hadoop.fs.*;
 
 import static org.apache.spark.sql.functions.col;
 import java.nio.file.Path;
@@ -154,11 +155,16 @@ public final class RunValidationHelper {
     }
 
 
-    public String writeDataFrame(SparkSession spark, Dataset<Row> newDfWithDirtyFlag, HashMap<String, String> inputArgsMap) {
+    public String writeDataFrame(SparkSession spark, Dataset<Row> newDfWithDirtyFlag, HashMap<String, String> inputArgsMap) throws Exception{
         newDfWithDirtyFlag.write()
                 .mode(SaveMode.Overwrite)
                 .option("header", "true")
-                .csv(inputArgsMap.get("ExpectedOutput"));
+                .csv(inputArgsMap.get("actualOutput"));
+
+
+        FileSystem fs = FileSystem.get(spark.sparkContext().hadoopConfiguration());
+        fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")+"/part-0000*"),
+                new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")));
         //df.write().mode(SaveMode.Overwrite).csv("newcars.csv");
 
         return "Success";

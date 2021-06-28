@@ -64,14 +64,14 @@ public class FieldIntegrityChecksStepDef {
     @Then("{string} should match {string}")
     public void should_match(String string, String string2) throws Exception{
 
-        inputArgsMap.put("ExpectedOutput",string2);
+        inputArgsMap.put("actualOutput",string);
 
 
         Dataset<Row>newDfWithDirtyFlag = helper.getDataFrameWithDirtyFlag(spark, inputFileDF, inputArgsMap);
         String returnMessage = helper.writeDataFrame(spark, newDfWithDirtyFlag, inputArgsMap);
 
         FileOperations fileOperations = new FileOperations();
-        boolean compareResult = fileOperations.compareTwoFiles(inputArgsMap.get("output"),inputArgsMap.get("ExpectedOutput") );
+        boolean compareResult = fileOperations.compareTwoFiles(inputArgsMap.get("output"),inputArgsMap.get("actualOutput") );
 
         assertEquals(true, compareResult);
     }

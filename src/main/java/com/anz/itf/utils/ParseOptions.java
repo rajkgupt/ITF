@@ -2,45 +2,24 @@ package com.anz.itf.utils;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.*;
-import java.util.HashMap;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.io.File;
 
 public class ParseOptions {
     public static final Options OPTIONS;
 
     static {
-
         OPTIONS = new Options();
-
-        OptionBuilder.withArgName("path");
-        OptionBuilder.hasArgs();
-        OptionBuilder.withDescription("Path to the schema file");
-        OptionBuilder.withLongOpt("schema");
-        OptionBuilder.isRequired();
-        OPTIONS.addOption(OptionBuilder.create("s"));
-
-        OptionBuilder.withArgName("path");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("Path to the data file");
-        OptionBuilder.withLongOpt("data");
-        OptionBuilder.isRequired();
-        OPTIONS.addOption(OptionBuilder.create("d"));
-
-        OptionBuilder.withArgName("path");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("Path to the tag file");
-        OptionBuilder.withLongOpt("tag");
-        OPTIONS.addOption(OptionBuilder.create("t"));
-
-        OptionBuilder.withArgName("path");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("Path to the output file");
-        OptionBuilder.withLongOpt("output");
-        OPTIONS.addOption(OptionBuilder.create("o"));
+        OPTIONS.addOption(new Option("schema", "schema", true, "Path to the schema file."));
+        OPTIONS.addOption(new Option("data", "data", true, "Path to the data file."));
+        OPTIONS.addOption(new Option("tag", "tag", true, "Path to the tag file."));
+        OPTIONS.addOption(new Option("output", "output", true, "Path to the output file."));
     }
 
     public static void printHelp(Options options){
-        //Options options = ;
 
         System.out.println("| Short | Long | Description |");
         System.out.println("|-------|------|-------------|");
@@ -58,29 +37,20 @@ public class ParseOptions {
     }
 
     public static HashMap parseOptions(Options options, String[] args) throws Exception{
-        final CommandLine commandLine = new PosixParser().parse(OPTIONS, args, false);
+        final CommandLine commandLine = new DefaultParser().parse(OPTIONS, args, false);
 
         HashMap<String, String> inputArgMap = new HashMap<>();
 
-
-        Option opt = options.getOption("schema");
-        String val = opt.getLongOpt();
-        //System.out.print("Value:" + val);
-
         String schema = commandLine.getOptionValue("schema");
-        //System.out.print("schema:" + schema);
         inputArgMap.put("schema", schema);
 
         String data = commandLine.getOptionValue("data");
-        //System.out.print("data:" + data);
         inputArgMap.put("data", data);
 
         String tag = commandLine.getOptionValue("tag");
-        //System.out.print("tag:" + tag);
         inputArgMap.put("tag", tag);
 
         String output = commandLine.getOptionValue("output");
-        //System.out.print("output:" + output);
         inputArgMap.put("output", output);
 
         return inputArgMap;
@@ -97,13 +67,25 @@ public class ParseOptions {
             ParseOptions.printHelp(options);
             System.exit(1);
         } else {
-            ParseOptions.parseOptions(options, args);
+            HashMap<String,String> optionsMap = ParseOptions.parseOptions(options, args);
+            optionsMap.entrySet().forEach(entry -> {
+                System.out.println(entry.getKey() + " " + entry.getValue());
+            });
+        }
+
+
+        String output = "C:\\raj\\Spark\\solution\\scenarios\\act-sbe2-2.csv";
+        File sourceDir = new File(output);
+        File destDir = new File(output+"Tmp");
+
+        if (sourceDir.renameTo(destDir)) {
+            System.out.println("Dir renamed successfully");
+        } else {
+            System.out.println("failed to rename dir");
         }
 
 
 
 
-
     }
-
 }

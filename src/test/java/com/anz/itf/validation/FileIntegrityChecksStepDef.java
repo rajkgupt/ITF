@@ -21,11 +21,13 @@ import java.util.HashMap;
 
 public class FileIntegrityChecksStepDef {
     HashMap<String, String > inputArgsMap = new HashMap<>();
+
+    /*
     HashMap<String, Long> recordCountCheckMap;
     HashMap<String, String> fileNameCheckMap;
     HashMap<String, Long> primaryKeyCountMap;
     HashMap<String, Long> missingOrAdditionalColumnCountMap;
-
+    */
 
     int exitCode;
 
@@ -65,24 +67,29 @@ public class FileIntegrityChecksStepDef {
         RunValidationHelper helper = new RunValidationHelper();
         Dataset<Row> inputFileDF = helper.getDataFrame(spark, inputArgsMap);
 
-        recordCountCheckMap = helper.getRecordCountCheck(inputFileDF, inputArgsMap);
+        //exitCode = helper.getRecordCountCheck(inputFileDF, inputArgsMap);
 
-        fileNameCheckMap = helper.getFileNameCheck(inputFileDF, inputArgsMap);
+        exitCode = helper.getFileNameCheck(inputFileDF, inputArgsMap);
 
-        primaryKeyCountMap = helper.getPrimaryKeyCount(spark, inputFileDF, inputArgsMap);
+        //exitCode = helper.getPrimaryKeyCount(spark, inputFileDF, inputArgsMap);
 
-        missingOrAdditionalColumnCountMap = helper.getMissingOrAdditionalColumnCount(spark, inputFileDF, inputArgsMap);
+        //exitCode = helper.getMissingOrAdditionalColumnCount(spark, inputFileDF, inputArgsMap);
 
         spark.stop();
 
     }
 
-    @Then("the program should exit with RETURN CODE of {string}")
-    public void the_program_should_exit_with_return_code_of(String string) {
+    @Then("the program should exit with RETURN CODE of {int}")
+    public void the_program_should_exit_with_return_code_of(int val) {
 
+        assertEquals(val,exitCode);
 
+        /*
         assertEquals(fileNameCheckMap.get("fileNameWithoutFolderFromInputCommand"),
                 fileNameCheckMap.get("dataFileNameFromTagFile")); //fileName check
+
+        //assertEquals(1,returnedExitValueFromValidationHelperMethod);
+
         assertEquals(recordCountCheckMap.get("totalRecordCountFromDF"),
                 recordCountCheckMap.get("recordCountFromTagFile")); //record count check
         assertEquals(0,(long)primaryKeyCountMap.get("primaryKeyCount")); //primary key count check
@@ -90,7 +97,7 @@ public class FileIntegrityChecksStepDef {
         //missing or additional column records check
         assertEquals(0,
                 (long)missingOrAdditionalColumnCountMap.get("missingOrAdditionalColumnCount"));
-
+        */
 
         /*
         if (fileNameWithoutFolderFromInputCommand.equals(dataFileNameFromTagFile)) {
@@ -104,6 +111,8 @@ public class FileIntegrityChecksStepDef {
         }*/
 
     }
+
+    /*
     @After("@tag1")
     public void testEnd(){
         if (exitCode == 0) {
@@ -114,4 +123,5 @@ public class FileIntegrityChecksStepDef {
             //System.exit(11);
         }
     }
+     */
 }

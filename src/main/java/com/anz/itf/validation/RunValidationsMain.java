@@ -16,10 +16,16 @@ import java.util.regex.Pattern;
 public final class RunValidationsMain {
     private static final Pattern SPACE = Pattern.compile(" ");
     HashMap<String, String > inputArgsMap = new HashMap<>();
+
+    /*
     HashMap<String, Long> recordCountCheckMap;
     HashMap<String, String> fileNameCheckMap;
     HashMap<String, Long> primaryKeyCountMap;
     HashMap<String, Long> missingOrAdditionalColumnCountMap;
+    */
+
+    int returnCode=0;
+
 
     public static void main(String[] args) throws Exception {
 
@@ -43,18 +49,19 @@ public final class RunValidationsMain {
 
 
         RunValidationHelper helper = new RunValidationHelper();
+
         Dataset<Row> inputFileDF = helper.getDataFrame(spark, inputArgsMap);
 
-        main.recordCountCheckMap = helper.getRecordCountCheck(inputFileDF, inputArgsMap);
+        main.returnCode = helper.getRecordCountCheck(inputFileDF, inputArgsMap);
 
-        main.fileNameCheckMap = helper.getFileNameCheck(inputFileDF, inputArgsMap);
+        main.returnCode = helper.getFileNameCheck(inputFileDF, inputArgsMap);
 
-        main.primaryKeyCountMap = helper.getPrimaryKeyCount(spark, inputFileDF, inputArgsMap);
+        main.returnCode = helper.getPrimaryKeyCount(spark, inputFileDF, inputArgsMap);
 
-        main.missingOrAdditionalColumnCountMap = helper.getMissingOrAdditionalColumnCount(spark, inputFileDF, inputArgsMap);
-
-
+        main.returnCode = helper.getMissingOrAdditionalColumnCount(spark, inputFileDF, inputArgsMap);
 
         spark.stop();
+
+        System.exit(main.returnCode);
     }
 }

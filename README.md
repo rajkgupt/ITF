@@ -45,7 +45,7 @@
     ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
-</p>
+
 
 
 
@@ -136,6 +136,21 @@ This is an example of how to list things you need to use the software and how to
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+java -jar ITF-anz-code-challenge-UBER.jar \
+RunValidationsMain \
+-schema /path/to/schema.json \
+-data /path/to/data.csv \
+-tag /path/to/tag.tag \
+-output /path/to/output.csv
+
+example:
+java -jar ITF-anz-code-challenge-UBER.jar \
+RunValidationsMain \
+-schema scenarios/aus-capitals.json \
+-data scenarios/aus-capitals.csv \
+-tag scenarios/aus-capitals.tag \
+-output scenarios/sbe-1-1.csv
+
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 

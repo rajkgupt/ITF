@@ -13,7 +13,8 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import static org.apache.spark.sql.functions.col;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public final class RunValidationHelper {
     Long totalRecordCountFromDF = null;
@@ -43,6 +44,7 @@ public final class RunValidationHelper {
 
         Dataset<Row> inputFileDF  = spark.read().format("csv")
                 .option("header", "true")
+                .option("dateFormat", "dd-MM-yyyy")
                 .schema(schema)
                 .load(inputArgsMap.get("data")).cache();
 
@@ -81,14 +83,20 @@ public final class RunValidationHelper {
 
         //Operation for fileName check
         fileNameWithFolderFromInputCommand = inputArgsMap.get("data");
-        String[] fileFolderNamesArray = fileNameWithFolderFromInputCommand.split("/");
-        fileNameWithoutFolderFromInputCommand = fileFolderNamesArray[1];
+
+        // create object of Path
+        Path path = Paths.get(fileNameWithFolderFromInputCommand);
+        // call getFileName() and get FileName path object
+        Path fileNameWithoutFolderFromInputCommand = path.getFileName();
+
+        //String[] fileFolderNamesArray = fileNameWithFolderFromInputCommand.split("/");
+        //fileNameWithoutFolderFromInputCommand = fileFolderNamesArray[1];
         dataFileNameFromTagFile = tagFileContents.get("fileName");
         System.out.println("fileNameWithoutFolderFromInputCommand calculated is:" + fileNameWithoutFolderFromInputCommand);
         System.out.println("dataFileNameFromTagFile found is:" + dataFileNameFromTagFile);
 
         HashMap<String, String> fileNameCheckMap = new HashMap<>();
-        fileNameCheckMap.put("fileNameWithoutFolderFromInputCommand",fileNameWithoutFolderFromInputCommand);
+        fileNameCheckMap.put("fileNameWithoutFolderFromInputCommand",fileNameWithoutFolderFromInputCommand.toString());
         fileNameCheckMap.put("dataFileNameFromTagFile",dataFileNameFromTagFile);
 
         return fileNameCheckMap;

@@ -173,7 +173,7 @@ public final class RunValidationHelper {
                 fs.globStatus(new org.apache.hadoop.fs.Path(
                         inputArgsMap.get("actualOutput")+"/part-0000*"))[0].getPath().getName();
 
-        fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + file),
+        fs.rename(new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput") + "/" + file),
                 new org.apache.hadoop.fs.Path(inputArgsMap.get("actualOutput")));
 
         //df.write().mode(SaveMode.Overwrite).csv("newcars.csv");

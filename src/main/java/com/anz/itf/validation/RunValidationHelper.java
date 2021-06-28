@@ -254,10 +254,10 @@ public final class RunValidationHelper {
             System.out.println("Sorry, unable to delete the file.");
         }
 
-        Path path1 = Paths.get(output + "Tmp");
-        java.nio.file.Files.delete(path1);
+        //Path path1 = Paths.get(output + "Tmp");
+        //java.nio.file.Files.delete(path1);
 
-        //FileUtils.deleteDirectory(new File(output + "Tmp"));
+        FileUtils.deleteDirectory(new File(output + "Tmp"));
 
 
 

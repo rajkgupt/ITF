@@ -97,7 +97,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>target/</classpathPrefix>
-                            <mainClass>com.anz.itf.RunValidationsMain</mainClass>
+                            <mainClass>com.anz.itf.validation.RunValidationsMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

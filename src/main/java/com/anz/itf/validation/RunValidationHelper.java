@@ -211,7 +211,8 @@ public final class RunValidationHelper {
                 .mode(SaveMode.Overwrite)
                 .option("header", "true")
                 .option("dateFormat", "dd-MM-yyyy")
-                .option("nullValue", "\u0000") //\u0000 is printing ""...find another way..
+                .option("nullValue", "") //\u0000 is printing ""...find another way..
+                .option("quoteAll", "false")
                 .csv(inputArgsMap.get("actualOutput"));
 
 

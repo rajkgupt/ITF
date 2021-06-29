@@ -210,7 +210,7 @@ public final class RunValidationHelper {
                 .mode(SaveMode.Overwrite)
                 .option("header", "true")
                 .option("dateFormat", "dd-MM-yyyy")
-                .option("quote", "")
+                .option("quote", "\u0000")
                 .csv(inputArgsMap.get("actualOutput"));
 
 

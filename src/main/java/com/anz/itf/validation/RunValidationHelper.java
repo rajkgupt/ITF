@@ -48,6 +48,7 @@ public final class RunValidationHelper {
                 .option("header", "true")
                 .option("dateFormat", "dd-MM-yyyy")
                 .schema(schema)
+                .option("enforceSchema",true)
                 .load(inputArgsMap.get("data")).cache();
 
         return inputFileDF;
@@ -210,7 +211,7 @@ public final class RunValidationHelper {
                 .mode(SaveMode.Overwrite)
                 .option("header", "true")
                 .option("dateFormat", "dd-MM-yyyy")
-                .option("nullValue", "\u0000")
+                .option("nullValue", "\u0000") //\u0000 is printing ""...find another way..
                 .csv(inputArgsMap.get("actualOutput"));
 
 

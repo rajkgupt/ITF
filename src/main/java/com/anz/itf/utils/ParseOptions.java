@@ -2,11 +2,7 @@ package com.anz.itf.utils;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.*;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.io.File;
 
 public class ParseOptions {
     public static final Options OPTIONS;
@@ -20,7 +16,6 @@ public class ParseOptions {
     }
 
     public static void printHelp(Options options){
-
         System.out.println("| Short | Long | Description |");
         System.out.println("|-------|------|-------------|");
 
@@ -43,34 +38,13 @@ public class ParseOptions {
 
         String schema = commandLine.getOptionValue("schema");
         inputArgMap.put("schema", schema);
-
         String data = commandLine.getOptionValue("data");
         inputArgMap.put("data", data);
-
         String tag = commandLine.getOptionValue("tag");
         inputArgMap.put("tag", tag);
-
         String output = commandLine.getOptionValue("output");
         inputArgMap.put("output", output);
 
         return inputArgMap;
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws Exception{
-
-        Options options = ParseOptions.OPTIONS;
-
-        if (args.length < 4) {
-            ParseOptions.printHelp(options);
-            System.exit(1);
-        } else {
-            HashMap<String,String> optionsMap = ParseOptions.parseOptions(options, args);
-            optionsMap.entrySet().forEach(entry -> {
-                System.out.println(entry.getKey() + " " + entry.getValue());
-            });
-        }
     }
 }

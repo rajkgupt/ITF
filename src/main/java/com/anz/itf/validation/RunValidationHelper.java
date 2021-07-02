@@ -1,20 +1,13 @@
 package com.anz.itf.validation;
 
 import com.anz.itf.utils.FileOperations;
-import com.anz.itf.utils.ParseOptions;
-import org.apache.commons.cli.Options;
-import org.apache.commons.io.FileUtils;
 import org.apache.spark.sql.*;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.apache.hadoop.fs.*;
 
 import static org.apache.spark.sql.functions.col;
 import java.nio.file.Path;
@@ -30,10 +23,8 @@ public final class RunValidationHelper {
 
     public Dataset<Row> getDataFrame(SparkSession spark, HashMap<String,String> inputArgsMap) {
 
-        //TODO - handle date format error
         spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY");
 
-        //TODO - handle schema in generic manner - from input argument json file?
         StructType schema = new StructType(new StructField[]{
                 new StructField("State/Territory"     , DataTypes.StringType ,false, Metadata.empty()),
                 new StructField("Capital"   ,DataTypes.StringType  ,false, Metadata.empty()),
@@ -54,9 +45,7 @@ public final class RunValidationHelper {
         return inputFileDF;
     }
 
-    public static void main(String[] args)  {
-        Options options = ParseOptions.OPTIONS;
-    }
+
 
     /**
      * Performs record Count checks
@@ -64,7 +53,7 @@ public final class RunValidationHelper {
      * @param inputArgsMap
      * @return 0 if records Count match other returns 1
      */
-    public int getRecordCountCheck(Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
+    public int performRecordCountCheck(Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
 
         //Prep to perform FileName & Record count checks
         // Get FileName and recordCount from tag file
@@ -78,9 +67,7 @@ public final class RunValidationHelper {
         System.out.println("totalRecordCountFromDF calculated is:" + totalRecordCountFromDF);
         System.out.println("recordCountFromTagFile found is:" + recordCountFromTagFile);
 
-
         int recordCount = 0;
-
         if (totalRecordCountFromDF != recordCountFromTagFile)
             return 1 ;
         else
@@ -93,7 +80,7 @@ public final class RunValidationHelper {
      * @param inputArgsMap
      * @return 0 if matches else returns 2
      */
-    public int getFileNameCheck(Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
+    public int performFileNameCheck(Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
 
         FileOperations fileOperations = new FileOperations();
         HashMap<String,String> tagFileContents = fileOperations.readTagFile(inputArgsMap.get("tag"));
@@ -101,15 +88,12 @@ public final class RunValidationHelper {
         //Operation for fileName check
         fileNameWithFolderFromInputCommand = inputArgsMap.get("data");
 
-        // create object of Path
         Path path = Paths.get(fileNameWithFolderFromInputCommand);
-        // call getFileName() and get FileName path object
         Path fileNameWithoutFolderFromInputCommand = path.getFileName();
 
         dataFileNameFromTagFile = tagFileContents.get("fileName");
         System.out.println("fileNameWithoutFolderFromInputCommand calculated is:" + fileNameWithoutFolderFromInputCommand);
         System.out.println("dataFileNameFromTagFile found is:" + dataFileNameFromTagFile);
-
 
         if (fileNameWithoutFolderFromInputCommand.toString().equals(dataFileNameFromTagFile))
             return 0;
@@ -124,17 +108,12 @@ public final class RunValidationHelper {
      * @param inputArgsMap
      * @return 0 if no violation, else return 3
      */
-    public int getPrimaryKeyCount(SparkSession spark,
-                                                    Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
-
-
-        //Prep to perform Primary key & Missing or additional columns check
-        //Register the dataframe with table
-        //inputFileDF.createOrReplaceTempView("ausInputFileTable");
+    public int performPrimaryKeyCount(SparkSession spark,
+                                      Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
 
         long countBeforeDroppingDupes = inputFileDF.count();
 
-        String primaryKeysArray[] = { "State/Territory"};
+        String primaryKeysArray[] = { "State/Territory"}; //TODO take from schema DS
 
         //Operation for primary key violation check
         Dataset<Row> primaryKeyCountDF = inputFileDF.dropDuplicates(primaryKeysArray);
@@ -147,8 +126,6 @@ public final class RunValidationHelper {
             return 0;
         else
             return 3;
-
-
     }
 
     /**
@@ -158,8 +135,8 @@ public final class RunValidationHelper {
      * @param inputArgsMap
      * @return 0 if no violation else 4
      */
-    public int getMissingOrAdditionalColumnCount(SparkSession spark,
-                                                                   Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
+    public int performMissingOrAdditionalColumnCount(SparkSession spark,
+                                                     Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
 
         inputFileDF.createOrReplaceTempView("ausInputFileTable");
         //Operations to check for missing or additional columns
@@ -179,95 +156,53 @@ public final class RunValidationHelper {
             return 4;
     }
 
-
     /**
      *
-     * @param spark
-     * @param inputFileDF
      * @param inputArgsMap
      * @return
      */
-    public Dataset<Row> getDataFrameWithDirtyFlag(SparkSession spark, Dataset<Row> inputFileDF, HashMap<String, String> inputArgsMap) {
+    public int performFieldValidationCheck(HashMap<String, String> inputArgsMap) throws Exception{
+
+        SparkSession spark = SparkSession
+                .builder()
+                .config("spark.master","local")
+                .appName("RunValidations locally")
+                .getOrCreate();
+
+
+        Dataset<Row> inputFileDF = getDataFrame(spark, inputArgsMap);
 
         Dataset<Row>newDf = inputFileDF.withColumn("dirty_flag", functions.when(functions.col("_corrupt_record").isNotNull(), 1)
                 .otherwise(0));
         newDf = newDf.drop("_corrupt_record");
         newDf.show();
 
-        return newDf;
-    }
-
-
-    /**
-     *
-     * @param spark
-     * @param newDfWithDirtyFlag
-     * @param inputArgsMap
-     * @return
-     * @throws Exception
-     */
-    public String writeDataFrame(SparkSession spark, Dataset<Row> newDfWithDirtyFlag, HashMap<String, String> inputArgsMap) throws Exception{
-        newDfWithDirtyFlag.write()
+        //comment in windows due to winutils issue
+        /*
+        newDf.write()
                 .mode(SaveMode.Overwrite)
                 .option("header", "true")
                 .option("dateFormat", "dd-MM-yyyy")
                 .option("nullValue", "") //\u0000 is printing ""...find another way..
                 .option("quoteAll", "false")
                 .csv(inputArgsMap.get("actualOutput"));
+        */
 
-
-        String output = inputArgsMap.get("actualOutput");
-        File sourceDir = new File(output);
-        File destDir = new File(output+"Tmp");
-
-        if (sourceDir.renameTo(destDir)) {
-            System.out.println("Dir renamed successfully");
-        } else {
-            System.out.println("failed to rename dir");
-        }
-
-        //String output = inputArgsMap.get("actualOutput");
-        Path path = Paths.get(output);
-        // call getFileName() and get FileName path object
-        Path fileNameWithoutFolderFromInputCommand = path.getFileName();
-        Path parentName = path.getParent();
-
-        File dir = new File(output+"Tmp");
-        System.out.println(dir.listFiles());
-
-        File[] files = dir.listFiles((d, name) -> name.startsWith("part"));
-
-        for (int i = 0; i < files.length; i++) {
-            File sourceFile = new File (output + "Tmp" + "/" + files[i].getName());
-            File destinationFile = new File(parentName.toString() + "/" + fileNameWithoutFolderFromInputCommand.toString());
-            System.out.println("sourceFile is " + sourceFile.getName());
-            System.out.println("destinationFile is " + destinationFile.getName());
-
-            if (sourceFile.renameTo(destinationFile)) {
-                System.out.println("Directory renamed successfully");
-            } else {
-                System.out.println("Failed to rename directory");
-            }
-        }
-
-
-        File file = new File (output + "Tmp" + "/_SUCCESS");;
-        if (file.delete()) {
-            System.out.println(file.getName() + " is deleted!");
-        } else {
-            System.out.println("Sorry, unable to delete the file.");
-        }
-
-        //Path path1 = Paths.get(output + "Tmp");
-        //java.nio.file.Files.delete(path1);
-
-        FileUtils.deleteDirectory(new File(output + "Tmp"));
+        FileOperations fileOps = new FileOperations();
+        fileOps.moveWrittenFileToTopLevel(spark,newDf,inputArgsMap);
 
 
 
-        //df.write().mode(SaveMode.Overwrite).csv("newcars.csv");
-
-        return "Success";
-
+        //TODO - implement file compare function
+        FileOperations fileOperations = new FileOperations();
+        //boolean compareResult = fileOperations.compareTwoFiles(inputArgsMap.get("output"),inputArgsMap.get("actualOutput") );
+        boolean compareResult = true;
+        if (compareResult)
+            return 0;
+        else
+            return 1;
     }
+
+
+
 }
